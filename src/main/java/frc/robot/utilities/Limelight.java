@@ -20,6 +20,9 @@ public class Limelight {
     private static double m_LimelightSteerCommand = 0.0;
     private static NetworkTableEntry ty = table.getEntry("ty");
 
+
+    public static PIDController limelightPID = new PIDController(0.08, 0, 0);
+
     private static double limelightY = ty.getDouble(0.0);
 
     private static double[] distances = { 87, 150 }; // should be in Inches???
@@ -115,6 +118,18 @@ public class Limelight {
     public static double getPipeline() {
         NetworkTableEntry pipeline = table.getEntry("pipeline");
         return pipeline.getDouble(-1);
+    }
+
+    public static void rotateTurret() {
+        Limelight.testFeed();
+        double x = Math.abs(Limelight.getX());
+        double power = x * 0.08;
+        if (Limelight.getX() > 0d) {
+            ShooterSubsystem.shooterRotation(power);
+        }
+        if (Limelight.getX() < -0d) {
+            ShooterSubsystem.shooterRotation(-power);
+        }
     }
 
     /**

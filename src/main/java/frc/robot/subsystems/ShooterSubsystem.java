@@ -16,19 +16,20 @@ import frc.robot.utilities.Limelight;
  * <summary> Code meant for the Shooter and launcher balls with the hopper
  * </summary>
  */
-public class ShooterSubsystem extends SubsystemBase{
-    private static TalonSRX masterShooterTalon, followerTalon, hopperTalon;
+public class ShooterSubsystem extends SubsystemBase {
+    private static TalonSRX masterShooterTalon, followerTalon, hopperTalon, rotationTalon;
     private static Servo hoodServo;
 
     double hoodAngle = 0;
 
-    PIDController pidController = new PIDController(0.1,0,0);
+    PIDController pidController = new PIDController(0.1, 0, 0);
 
     // initializes the motors
     public ShooterSubsystem() {
         masterShooterTalon = new TalonSRX(RobotContainer.robotConstants.getRobotIDConstants().getTopShooterMotorID());
         followerTalon = new TalonSRX(RobotContainer.robotConstants.getRobotIDConstants().getBottomShooterMotorID());
         hopperTalon = new TalonSRX(RobotContainer.robotConstants.getRobotIDConstants().getHopperMotorID());
+        rotationTalon = new TalonSRX(RobotContainer.robotConstants.getRobotIDConstants().getRotationMotorID());
         hoodServo = new Servo(RobotContainer.robotConstants.getRobotIDConstants().getHoodedAngleMotorID());
 
         masterShooterTalon.configFactoryDefault();
@@ -98,21 +99,34 @@ public class ShooterSubsystem extends SubsystemBase{
         }
     }
 
-      /**
-   * 
-   * @param angle the angle you want the hood to be at. (Zero will shoot the ball
-   *          high and 60 will shoot it low almost into the floor.) a value of
-   *          less than 0 or greater than 60 will disable pid.
-   */
-  public void setHoodAngle(double angle) { 
-    this.hoodAngle = angle;
-    pidController.setSetpoint(angle);
-   }
+    public static void shooterRotation(double speed) {
+        rotationTalon.set(ControlMode.PercentOutput, speed);
+    }
 
-  public void setServoSpeed(double speed) {
-    speed = (speed/2.0)+0.5;
-    hoodServo.set(speed);
-  }
+    /**
+     * 
+     * @param angle the angle you want the hood to be at. (Zero will shoot the ball
+     *              high and 60 will shoot it low almost into the floor.) a value of
+     *              less than 0 or greater than 60 will disable pid.
+     */
+    public void setHoodAngle(double angle) {
+        this.hoodAngle = angle;
+        pidController.setSetpoint(angle);
+    }
+
+    public void setServoSpeed(double speed) {
+        speed = (speed / 2.0) + 0.5;
+        hoodServo.set(speed);
+    }
+
+    //TODO: Calculate a full rotation and change it to degrees
+    public void setTurretAngle(double setpoint) {
+        Limelight.limelightPID.setSetpoint(setpoint);
+    }
+
+    public double getTurretEncoder() {
+        return rotationTalon.getSelectedSensorPosition();
+    }
 
     public static boolean reachedRPM() {
         for (int i = 0; i < Limelight.RPMs.length; i++) {
@@ -135,10 +149,12 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     /**
-   * 
-   * @return returns the current Hood Angle in Degrees.
-   */
-  public double getHoodAngle() { return hoodServo.getAngle(); }
+     * 
+     * @return returns the current Hood Angle in Degrees.
+     */
+    public double getHoodAngle() {
+        return hoodServo.getAngle();
+    }
 
     // Diagnostic Information used in diagnostics subsystem
     public static boolean isTopShooterAlive() {
@@ -170,5 +186,6 @@ public class ShooterSubsystem extends SubsystemBase{
 
         setServoSpeed(pidController.calculate(getHoodAngle()));
         SmartDashboard.putNumber("Curr Angle", getHoodAngle());
+        setTurretAngle(Limelight.limelightPID.calculate(getTurretEncoder()));
     }
 }

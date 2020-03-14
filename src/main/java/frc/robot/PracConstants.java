@@ -87,6 +87,11 @@ public final class PracConstants extends Constants {
             return 3;
         }
 
+        @Override
+        public int getRotationMotorID() {
+            return 4;
+        }
+
     }
 
     public class DriveConstants extends Constants.DriveConstants {

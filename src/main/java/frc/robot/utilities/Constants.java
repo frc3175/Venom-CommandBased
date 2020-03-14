@@ -45,6 +45,8 @@ public abstract class Constants
 
         public abstract int getHopperMotorID();
 
+        public abstract int getRotationMotorID();
+
         public abstract int getClimbMotorLeftTalon();
 
         public abstract int getClimbMotorRightTalon();

@@ -154,12 +154,15 @@ public class RobotContainer {
     manip = new XBoxController(robotConstants.getOIConstants().getKOpControllerPort());
     climber = new XBoxController(robotConstants.getOIConstants().getKClimberControllerPort());
 
+    //Vision tracking (just drivetrain)
     driver.buttonA.whenHeld(new VisionTrack(m_robotDrive));
 
+    //Shooter and intake
     manip.buttonB.whenHeld(new ShooterCommand(m_ShooterSubsystem, 0.7)); // Shoot
     manip.buttonY.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_ShooterSubsystem, false)); // Intake normal
     manip.buttonSELECT.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_ShooterSubsystem, true)); // Intake Reverse
 
+    //Climber buttons
     climber.buttonA.whenPressed(new FoldSetCommand(m_ClimberSubsystem));
     climber.buttonLeftBumper.whenPressed(new ClimbUpCommand(m_ClimberSubsystem, 0.85));
     climber.buttonRightBumper.whenPressed(new ClimbDownCommand(m_ClimberSubsystem, 0.85));

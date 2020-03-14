@@ -37,12 +37,6 @@ public class Utils {
         return Math.acos(Math.cos(ang1) * Math.cos(ang2));
     }
 
-    // This one doesnt work too well
-    public static double distFrom(double tx, double ty) {
-        return RobotContainer.robotConstants.getLimelightConstants().getCameraHeight()
-                * Math.tan(addAngle(tx, (ty + RobotContainer.robotConstants.getLimelightConstants().getCameraAngle())));
-    }
-
     public static double climberEncoderCalculator() {
         return ((Math.PI / 2) * (7 * 2048));
     }
