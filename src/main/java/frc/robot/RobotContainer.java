@@ -128,8 +128,13 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     putAuton();
+
+
     //Push Diagnostics
     new PushDiagnostics(m_DiagnosticsSubsystem);
+
+    //Climb Fold
+    new FoldCommand(m_ClimberSubsystem, climber.getLeftStickY(), climber.getRightStickY());
   }
 
   public void putAuton() {
@@ -155,8 +160,6 @@ public class RobotContainer {
     manip.buttonY.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_ShooterSubsystem, false)); // Intake normal
     manip.buttonSELECT.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_ShooterSubsystem, true)); // Intake Reverse
 
-    //TODO: I do not know if this fold command works
-    new FoldCommand(m_ClimberSubsystem, climber.getLeftStickY(), climber.getRightStickY());
     climber.buttonA.whenPressed(new FoldSetCommand(m_ClimberSubsystem));
     climber.buttonLeftBumper.whenPressed(new ClimbUpCommand(m_ClimberSubsystem, 0.85));
     climber.buttonRightBumper.whenPressed(new ClimbDownCommand(m_ClimberSubsystem, 0.85));
