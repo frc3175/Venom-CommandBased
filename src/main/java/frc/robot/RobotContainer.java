@@ -29,9 +29,11 @@ import frc.robot.commands.ClimbUpCommand;
 import frc.robot.commands.FoldCommand;
 import frc.robot.commands.FoldSetCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.PushDiagnostics;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.VisionTrack;
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.DiagnosticSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -49,7 +51,7 @@ public class RobotContainer {
   public final ClimberSubsystem m_ClimberSubsystem;
   public final IntakeSubsystem m_IntakeSubsystem;
   public final DriveSubsystem m_robotDrive;
-  //public final DiagnosticsSubsystem m_DiagnosticsSubsystem;
+  public final DiagnosticSubsystem m_DiagnosticsSubsystem;
 
   // The driver's controller
   public static XBoxController driver;
@@ -122,9 +124,12 @@ public class RobotContainer {
     m_IntakeSubsystem = new IntakeSubsystem();
     m_ClimberSubsystem = new ClimberSubsystem();
     m_robotDrive = new DriveSubsystem();
+    m_DiagnosticsSubsystem = new DiagnosticSubsystem();
     // Configure the button bindings
     configureButtonBindings();
     putAuton();
+    //Push Diagnostics
+    new PushDiagnostics(m_DiagnosticsSubsystem);
   }
 
   public void putAuton() {
