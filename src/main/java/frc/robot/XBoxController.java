@@ -113,6 +113,13 @@ public class XBoxController extends Joystick{
 		return getRawButton(6);
 	}
 
+	/**
+     * @return if start button has been pressed
+     */
+	public boolean getStartButton() {
+		return getRawButton(8);
+	}
+
 
 	public TriggerButton buttonLeftTrigger = new TriggerButton(this, LEFT_TRIGGER);
 	public TriggerButton buttonRightTrigger = new TriggerButton(this, RIGHT_TRIGGER);

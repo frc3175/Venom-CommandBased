@@ -72,6 +72,9 @@ public class RobotContainer {
   public static XBoxController manip;
   public static XBoxController climber;
 
+  // Boolean states
+  private boolean ClimberControllerState = false;
+
   // The constants of the robot
   public static Constants robotConstants;
 
@@ -166,8 +169,10 @@ public class RobotContainer {
     // Put Limelight Data on smartDashboard
     new LimelightData(m_LimelightSubsystem);
 
-    // Climb Fold
-    new FoldCommand(m_ClimberSubsystem, climber.getLeftStickY(), climber.getRightStickY());
+    if (ClimberControllerState) {
+      // Climb Fold
+      new FoldCommand(m_ClimberSubsystem, climber.getLeftStickY(), climber.getRightStickY());
+    }
 
     // Manual Turret
     new RotateTurretManual(m_ShooterSubsystem, manip.getLeftStickX());
@@ -219,11 +224,16 @@ public class RobotContainer {
         .whenHeld(new ShootWithTurret(m_RobotDrive, m_LimelightSubsystem, m_ShooterSubsystem, m_HopperSubsystem, 0.7));
     manip.buttonY.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_HopperSubsystem, false)); // Intake normal
     manip.buttonSELECT.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_HopperSubsystem, true)); // Intake Reverse
+    if (manip.getStartButton()) {
+      ClimberControllerState = true;
+    }
 
-    // Climber buttons
-    climber.buttonA.whenPressed(new FoldSetCommand(m_ClimberSubsystem));
-    climber.buttonLeftBumper.whenPressed(new ClimbUpCommand(m_ClimberSubsystem, 0.85));
-    climber.buttonRightBumper.whenPressed(new ClimbDownCommand(m_ClimberSubsystem, 0.85));
+    if (ClimberControllerState) {
+      // Climber buttons
+      climber.buttonA.whenPressed(new FoldSetCommand(m_ClimberSubsystem));
+      climber.buttonLeftBumper.whenPressed(new ClimbUpCommand(m_ClimberSubsystem, 0.85));
+      climber.buttonRightBumper.whenPressed(new ClimbDownCommand(m_ClimberSubsystem, 0.85));
+    }
   }
 
   /**
