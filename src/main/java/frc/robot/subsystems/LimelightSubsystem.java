@@ -1,17 +1,19 @@
-package frc.robot.utilities;
+package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.utilities.PIDController;
 import frc.robot.utilities.Utils;
 
 @SuppressWarnings("unused")
-public class Limelight {
+public class LimelightSubsystem extends SubsystemBase {
     public static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     public static DriverStation ds = DriverStation.getInstance();
 
@@ -19,7 +21,8 @@ public class Limelight {
     private static double m_LimelightDriveCommand = 0.0;
     private static double m_LimelightSteerCommand = 0.0;
     private static NetworkTableEntry ty = table.getEntry("ty");
-
+    private NetworkTableEntry tx = table.getEntry("tx");
+    private NetworkTableEntry camMode = table.getEntry("camMode");
 
     public static PIDController limelightPID = new PIDController(0.08, 0, 0);
 
@@ -33,8 +36,22 @@ public class Limelight {
         double y = table.getEntry("ty").getDouble(0.0);
     }
 
-    public static void forceLEDsOn() {
+    public void forceLEDsOn() {
         table.getEntry("ledMode").forceSetValue(3);
+    }
+
+    /**
+     * Sets limelight to vision processing mode
+     */
+    public void visionMode() {
+        camMode.setNumber(0); // sets camera to vision processing mode
+    }
+
+    /**
+     * Disables vision processing mode
+     */
+    public void driverMode() {
+        camMode.setNumber(1); // sets camera to driving mode
     }
 
     public static void forceLEDsOff() {
@@ -43,6 +60,13 @@ public class Limelight {
 
     public static double getX() {
         return table.getEntry("tx").getDouble(0.0);
+    }
+
+    /**
+     * Angle error in x axis (left or right)
+     */
+    public double getXError() {
+        return tx.getDouble(0.0);
     }
 
     public static double getY() {
@@ -74,19 +98,19 @@ public class Limelight {
     }
 
     public static void dumbLineup() {
-        Limelight.testFeed();
-        double x = Math.abs(Limelight.getX());
+        testFeed();
+        double x = Math.abs(getX());
         double power = x * 0.08;
-        if (Limelight.getX() > 0d) {
+        if (getX() > 0d) {
             DriveSubsystem.drive(-power, 0);
         }
-        if (Limelight.getX() < -0d) {
+        if (getX() < -0d) {
             DriveSubsystem.drive(0, power);
         }
     }
 
     public static double findClosestDistance() {
-        double myNumber = distanceCalulator(Limelight.getY());
+        double myNumber = distanceCalulator(getY());
         double distance = Math.abs(distances[0] - myNumber);
         int idx = 0;
         for (int c = 0; c < distances.length; c++) {
@@ -100,8 +124,8 @@ public class Limelight {
     }
 
     public static void goToDistance(boolean value) {
-        Limelight.testFeed();
-        double distance = distanceCalulator(Limelight.getY());
+        testFeed();
+        double distance = distanceCalulator(getY());
         double power = distance * 0.002;
         System.out.println("Im going to " + findClosestDistance());
         {
@@ -121,13 +145,13 @@ public class Limelight {
     }
 
     public static void rotateTurret() {
-        Limelight.testFeed();
-        double x = Math.abs(Limelight.getX());
+        testFeed();
+        double x = Math.abs(getX());
         double power = x * 0.08;
-        if (Limelight.getX() > 0d) {
+        if (getX() > 0d) {
             ShooterSubsystem.shooterRotation(power);
         }
-        if (Limelight.getX() < -0d) {
+        if (getX() < -0d) {
             ShooterSubsystem.shooterRotation(-power);
         }
     }
@@ -151,13 +175,13 @@ public class Limelight {
     }
 
     public static void pushPeriodic() {
-        SmartDashboard.putNumber("Limelight Distance", distanceCalulator(Limelight.getY()));
+        SmartDashboard.putNumber("Limelight Distance", distanceCalulator(getY()));
         SmartDashboard.putNumber("RPM Setpoint", findRPM());
         ShooterSubsystem.publishRPM();
     }
 
     public static double findRPM() {
-        double myNumber = distanceCalulator(Limelight.getY());
+        double myNumber = distanceCalulator(getY());
         double distance = Math.abs(distances[0] - myNumber);
         int idx = 0;
         for (int c = 0; c < distances.length; c++) {

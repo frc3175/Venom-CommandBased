@@ -7,47 +7,58 @@
 
 package frc.robot.commands;
 
-import frc.robot.utilities.PIDController;
-import frc.robot.utilities.PIDCommand;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.utilities.PIDController;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class VisionTrack extends PIDCommand {
+public class VisionTrack extends CommandBase {
+    private LimelightSubsystem vision;
+    private DriveSubsystem drive;
+
+    private PIDController angleCorrector = new PIDController(0.05, 0, 5);
+
     /**
-     * Creates a new VisionTrack.
+     * Creates a new FollowTarget.
      */
+    public VisionTrack(LimelightSubsystem limelight, DriveSubsystem rDrive) {
+        vision = limelight;
+        drive = rDrive;
 
-    DriveSubsystem subsystem;
-
-    public VisionTrack(DriveSubsystem subsystem) {
-        super(
-                // The controller that the command will use
-                new PIDController(1.0, 0, 0.5),
-                // This should return the measurement
-                () -> subsystem.getVisionAngle(),
-                // This should return the setpoint (can also be a constant)
-                () -> 0,
-                // This uses the output
-                output -> {
-                    // Use the output here
-                    System.out.println(-output);
-                    subsystem.arcadeDrive(0, output, false);
-                });
         // Use addRequirements() here to declare subsystem dependencies.
-        // Configure additional PID options by calling `getController` here.
-        addRequirements(subsystem);
-        this.subsystem = subsystem;
-        getController().setIntegratorRange(-1, 1);
-        getController().setIntegratorZone(2);
-        getController().setTolerance(.5);
+        addRequirements(vision, drive);
 
+        angleCorrector.setTolerance(0.2);
     }
 
-    // Returns true when the command should end.
+    // Called when the command is initially scheduled.
     @Override
-    public boolean isFinished() {
-        return false;
+    public void initialize() {
+        angleCorrector.setSetpoint(0);
+        vision.forceLEDsOn();
+        vision.visionMode();
     }
+
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        // Passing aim PID output to the drive
+        drive.arcadeDrive(0, // Stationary while rotating
+                             // Angle Correction
+                MathUtil.clamp(
+                        // Calculate what to do based off measurement
+                        angleCorrector.calculate(-vision.getXError()),
+                        // Min, Max output
+                        -0.5, 0.5),
+                // No squared inputs
+                false);
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        angleCorrector.reset();
+    }
+
 }

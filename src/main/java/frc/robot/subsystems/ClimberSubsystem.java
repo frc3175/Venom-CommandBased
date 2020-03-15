@@ -24,15 +24,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
     }
 
-    /**
-     * 
-     * @param climbSpeed Speed at which the TalonFXs rotate
-     */
-    public void climb(double climbSpeed) {
-        leftClimbTalon.set(ControlMode.PercentOutput, climbSpeed);
-        rightClimbTalon.set(ControlMode.PercentOutput, -climbSpeed);
-    }
-
     public void runUpDownToPosition(double position, double climbSpeed) {
         if (position - leftClimbTalon.getSelectedSensorPosition() > 0) {
             leftClimbTalon.set(ControlMode.PercentOutput, climbSpeed);

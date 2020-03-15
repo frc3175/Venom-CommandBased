@@ -36,6 +36,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DiagnosticSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utilities.Constants;
 
@@ -52,6 +53,7 @@ public class RobotContainer {
   public final IntakeSubsystem m_IntakeSubsystem;
   public final DriveSubsystem m_robotDrive;
   public final DiagnosticSubsystem m_DiagnosticsSubsystem;
+  public final LimelightSubsystem m_LimelightSubsystem;
 
   // The driver's controller
   public static XBoxController driver;
@@ -125,6 +127,7 @@ public class RobotContainer {
     m_ClimberSubsystem = new ClimberSubsystem();
     m_robotDrive = new DriveSubsystem();
     m_DiagnosticsSubsystem = new DiagnosticSubsystem();
+    m_LimelightSubsystem = new LimelightSubsystem();
     // Configure the button bindings
     configureButtonBindings();
     putAuton();
@@ -154,8 +157,8 @@ public class RobotContainer {
     manip = new XBoxController(robotConstants.getOIConstants().getKOpControllerPort());
     climber = new XBoxController(robotConstants.getOIConstants().getKClimberControllerPort());
 
-    //Vision tracking (just drivetrain)
-    driver.buttonA.whenHeld(new VisionTrack(m_robotDrive));
+    //Vision tracking (Limelight and Drivetrain)
+    driver.buttonA.whenHeld(new VisionTrack(m_LimelightSubsystem, m_robotDrive));
 
     //Shooter and intake
     manip.buttonB.whenHeld(new ShooterCommand(m_ShooterSubsystem, 0.7)); // Shoot

@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
-import frc.robot.utilities.Limelight;
-
 /**
  * <summary> Code meant for the Shooter and launcher balls with the hopper
  * </summary>
@@ -90,7 +88,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void shoot(boolean pressed) {
         if (pressed) {
-            double targetVelocity_UnitsPer100ms = Limelight.findRPM();
+            double targetVelocity_UnitsPer100ms = LimelightSubsystem.findRPM();
             masterShooterTalon.set(ControlMode.Velocity, targetVelocity_UnitsPer100ms);
             followerTalon.set(ControlMode.Velocity, targetVelocity_UnitsPer100ms);
         } else {
@@ -121,7 +119,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     //TODO: Calculate a full rotation and change it to degrees
     public void setTurretAngle(double setpoint) {
-        Limelight.limelightPID.setSetpoint(setpoint);
+        LimelightSubsystem.limelightPID.setSetpoint(setpoint);
     }
 
     public double getTurretEncoder() {
@@ -129,9 +127,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public static boolean reachedRPM() {
-        for (int i = 0; i < Limelight.RPMs.length; i++) {
-            if (followerTalon.getSelectedSensorVelocity() >= Limelight.RPMs[i] - 100
-                    && followerTalon.getSelectedSensorVelocity() <= Limelight.RPMs[i] + 100) {
+        for (int i = 0; i < LimelightSubsystem.RPMs.length; i++) {
+            if (followerTalon.getSelectedSensorVelocity() >= LimelightSubsystem.RPMs[i] - 100
+                    && followerTalon.getSelectedSensorVelocity() <= LimelightSubsystem.RPMs[i] + 100) {
                 return true;
             }
         }
@@ -186,6 +184,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
         setServoSpeed(pidController.calculate(getHoodAngle()));
         SmartDashboard.putNumber("Curr Angle", getHoodAngle());
-        setTurretAngle(Limelight.limelightPID.calculate(getTurretEncoder()));
+        setTurretAngle(LimelightSubsystem.limelightPID.calculate(getTurretEncoder()));
     }
 }

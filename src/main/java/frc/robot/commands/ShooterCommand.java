@@ -10,7 +10,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.utilities.Limelight;
+import frc.robot.subsystems.LimelightSubsystem;
 
 public class ShooterCommand extends CommandBase {
     /**
@@ -36,7 +36,7 @@ public class ShooterCommand extends CommandBase {
     public void execute() {
         
         subsystem.shoot(true);
-        SmartDashboard.putNumber("Shooter Target Velocity", Limelight.findRPM());
+        SmartDashboard.putNumber("Shooter Target Velocity", LimelightSubsystem.findRPM());
         subsystem.setHoodAngle(30);
     }
 

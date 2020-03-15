@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DriveCommand;
-import frc.robot.utilities.Limelight;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -58,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double getVisionAngle() {
-        double value = Limelight.getY();
+        double value = LimelightSubsystem.getY();
         return value;
     }
 
