@@ -57,21 +57,13 @@ public class DriveSubsystem extends SubsystemBase {
      *                     is positive.
      * @param zRotation    The robot's rotation rate around the Z axis [-1.0..1.0].
      *                     Clockwise is positive.
-     * @param squareInputs If set, decreases the input sensitivity at low speeds.
      */
     @SuppressWarnings("ParameterName")
-    public void arcadeDrive(double xSpeed, double zRotation, boolean squareInputs) {
+    public void arcadeDrive(double xSpeed, double zRotation) {
 
         xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
 
         zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
-
-        // Square the inputs (while preserving the sign) to increase fine control
-        // while permitting full power.
-        if (squareInputs) {
-            xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
-            zRotation = Math.copySign(zRotation * zRotation, zRotation);
-        }
 
         double leftMotorOutput;
         double rightMotorOutput;

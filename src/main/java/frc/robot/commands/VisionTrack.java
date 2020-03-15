@@ -50,9 +50,7 @@ public class VisionTrack extends CommandBase {
                         // Calculate what to do based off measurement
                         angleCorrector.calculate(-vision.getXError()),
                         // Min, Max output
-                        -0.5, 0.5),
-                // No squared inputs
-                false);
+                        -0.5, 0.5));
     }
 
     // Called once the command ends or is interrupted.

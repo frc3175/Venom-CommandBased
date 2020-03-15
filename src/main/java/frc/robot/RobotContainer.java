@@ -34,8 +34,7 @@ import frc.robot.commands.ClimbUpCommand;
 import frc.robot.commands.FoldCommand;
 import frc.robot.commands.FoldSetCommand;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.LimelightData;
-import frc.robot.commands.PushDiagnostics;
+import frc.robot.commands.PushData;
 import frc.robot.commands.RotateTurretManual;
 import frc.robot.commands.ShootWithTurret;
 import frc.robot.commands.ShooterCommand;
@@ -164,10 +163,8 @@ public class RobotContainer {
             // Quick turn
             driver.getRightBumper())));
 
-    // Push Diagnostics
-    new PushDiagnostics(m_DiagnosticsSubsystem);
-    // Put Limelight Data on smartDashboard
-    new LimelightData(m_LimelightSubsystem);
+    // Push Data
+    new PushData(m_DiagnosticsSubsystem, m_ClimberSubsystem, m_LimelightSubsystem);
 
     if (ClimberControllerState) {
       // Climb Fold
@@ -211,7 +208,7 @@ public class RobotContainer {
         // Setpoint is 0
         0,
         // Pipe the output to the turning controls
-        output -> m_RobotDrive.arcadeDrive(driver.getRightTrigger(), output, false),
+        output -> m_RobotDrive.arcadeDrive(driver.getRightTrigger(), output),
         // Require the robot drive
         m_RobotDrive));
 

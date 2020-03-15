@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utilities.Utils;
 
 @SuppressWarnings("unused")
@@ -97,18 +95,6 @@ public class LimelightSubsystem extends SubsystemBase {
         return table.getEntry("ty1").getDouble(0.0);
     }
 
-    public static void dumbLineup() {
-        testFeed();
-        double x = Math.abs(getX());
-        double power = x * 0.08;
-        if (getX() > 0d) {
-            DriveSubsystem.drive(-power, 0);
-        }
-        if (getX() < -0d) {
-            DriveSubsystem.drive(0, power);
-        }
-    }
-
     public double findClosestDistance() {
         double myNumber = distanceCalulator(getY());
         double distance = Math.abs(distances[0] - myNumber);
@@ -121,22 +107,6 @@ public class LimelightSubsystem extends SubsystemBase {
             }
         }
         return distances[idx];
-    }
-
-    public void goToDistance(boolean value) {
-        testFeed();
-        double distance = distanceCalulator(getY());
-        double power = distance * 0.002;
-        System.out.println("Im going to " + findClosestDistance());
-        {
-            if (distance < findClosestDistance() - 3d) { // 5 acts as a range
-                DriveSubsystem.drive(power, -power); // should go back if distance is short
-            } else if (distance >= findClosestDistance() + 3d) { // 5 acts as a range
-                DriveSubsystem.drive(-power, power); // should drive forward
-            } else {
-                DriveSubsystem.drive(0, 0);
-            }
-        }
     }
 
     public static double getPipeline() {

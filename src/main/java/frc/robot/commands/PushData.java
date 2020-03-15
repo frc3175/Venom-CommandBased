@@ -8,18 +8,24 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DiagnosticSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 
-public class PushDiagnostics extends CommandBase {
+public class PushData extends CommandBase {
     /**
-     * Creates a diagnostic command.
+     * Creates a data pusher.
      */
-    DiagnosticSubsystem subsystem;
+    DiagnosticSubsystem diagnosticSub;
+    ClimberSubsystem climberSub;
+    LimelightSubsystem limelightSub;
 
-    public PushDiagnostics(DiagnosticSubsystem subsystem) {
+    public PushData(DiagnosticSubsystem diagnosticSub, ClimberSubsystem climberSub, LimelightSubsystem limelightSub) {
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem);
-        this.subsystem = subsystem;
+        addRequirements(diagnosticSub, climberSub, limelightSub);
+        this.diagnosticSub = diagnosticSub;
+        this.climberSub = climberSub;
+        this.limelightSub = limelightSub;
     }
 
     // Called when the command is initially scheduled.
@@ -30,10 +36,12 @@ public class PushDiagnostics extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        subsystem.pushClimberDiagnostics();
-        subsystem.pushDriveTrainDiagnostics();
-        subsystem.pushIntakeDiagnostics();
-        subsystem.pushShooterDiagnostics();
+        diagnosticSub.pushClimberDiagnostics();
+        diagnosticSub.pushDriveTrainDiagnostics();
+        diagnosticSub.pushIntakeDiagnostics();
+        diagnosticSub.pushShooterDiagnostics();
+        limelightSub.pushPeriodic();
+        climberSub.pushClimberEncoderValue();
     }
 
     // Called once the command ends or is interrupted.

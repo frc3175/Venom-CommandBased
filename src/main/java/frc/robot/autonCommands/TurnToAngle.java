@@ -30,7 +30,7 @@ public class TurnToAngle extends PIDCommand {
                 // Set reference to target
                 targetAngleDegrees,
                 // Pipe output to turn robot
-                output -> drive.arcadeDrive(0, output, false),
+                output -> drive.arcadeDrive(0, output),
                 // Require the drive
                 drive);
 

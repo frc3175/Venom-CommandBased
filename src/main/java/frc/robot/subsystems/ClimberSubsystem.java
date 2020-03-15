@@ -24,6 +24,11 @@ public class ClimberSubsystem extends SubsystemBase {
 
     }
 
+    /**
+     * 
+     * @param position Set position [Either <b>Up<b> or <b>Down<b>]
+     * @param climbSpeed Climber motor percent output
+     */
     public void runUpDownToPosition(double position, double climbSpeed) {
         if (position - leftClimbTalon.getSelectedSensorPosition() > 0) {
             leftClimbTalon.set(ControlMode.PercentOutput, climbSpeed);
@@ -36,7 +41,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     /**
      * 
-     * @return Returns true if the climber is in the up position
+     * @return True if the climber is in the up position
      */
     public boolean isClimberUp() {
         if(leftClimbTalon.getSelectedSensorPosition() > RobotContainer.robotConstants.getClimbConstants().getUpPosition()) {
@@ -48,7 +53,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     /**
      * 
-     * @return Returns true if the climber is in the down position
+     * @return True if the climber is in the down position
      */
     public boolean isClimberDown() {
         if(leftClimbTalon.getSelectedSensorPosition() > RobotContainer.robotConstants.getClimbConstants().getDownPosition()) {
@@ -101,7 +106,7 @@ public class ClimberSubsystem extends SubsystemBase {
         leftClimbTalon.setSelectedSensorPosition(0);
     }
 
-    public static void pushClimberEncoderValue() {
+    public void pushClimberEncoderValue() {
         SmartDashboard.putNumber("leftClimbTalon", leftClimbTalon.getSelectedSensorPosition());
     }
 

@@ -41,7 +41,7 @@ public class AutoAlignCommand extends PIDCommand {
         {
           // Use the output here
           //System.out.println(output);
-          subsystem.arcadeDrive(0, output, false);
+          subsystem.arcadeDrive(0, output);
         });
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.

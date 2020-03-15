@@ -19,7 +19,7 @@ public class SimpleThreeBall extends SequentialCommandGroup {
      * Creates a new Shoot auton with the drivetrain
      */
     public SimpleThreeBall(DriveSubsystem driveSub, LimelightSubsystem limelightSub, ShooterSubsystem shooterSub) {
-        super(new AutoAlignCommand(driveSub, limelightSub).withTimeout(2).andThen(() -> driveSub.arcadeDrive(0, 0, false)),
+        super(new AutoAlignCommand(driveSub, limelightSub).withTimeout(2).andThen(() -> driveSub.arcadeDrive(0, 0)),
                 new AutoShooterCommand(shooterSub, limelightSub).withTimeout(3));
     }
 }

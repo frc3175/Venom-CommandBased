@@ -44,7 +44,6 @@ public class ShooterCommand extends CommandBase {
         double targetVelocity = limelightSubsystem.findRPM();
         subsystem.shoot(targetVelocity);
         hopperSubsystem.hopperPower(RobotContainer.robotConstants.getIntakeConstants().getHopperSpeedForward());
-        SmartDashboard.putNumber("Shooter Target Velocity", limelightSubsystem.findRPM());
         subsystem.setHoodAngle(30);
     }
 

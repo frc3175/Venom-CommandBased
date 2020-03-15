@@ -19,8 +19,7 @@ public class TurretThreeBall extends SequentialCommandGroup {
      * Creates a new shoot auton with just the turret
      */
     public TurretThreeBall(DriveSubsystem driveSub, LimelightSubsystem limelightSub, ShooterSubsystem shooterSub) {
-        // super(new FooCommand(), new BarCommand());
-        addCommands(new TurretTrack(limelightSub, shooterSub).withTimeout(2).andThen(() -> driveSub.arcadeDrive(0, 0, false)),
+        addCommands(new TurretTrack(limelightSub, shooterSub).withTimeout(2).andThen(() -> driveSub.arcadeDrive(0, 0)),
                 new AutoShooterCommand(shooterSub, limelightSub).withTimeout(3));
     }
 }
