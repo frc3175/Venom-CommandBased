@@ -10,6 +10,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 
 public class ShooterCommand extends CommandBase {
@@ -17,12 +19,16 @@ public class ShooterCommand extends CommandBase {
      * Creates a new ShooterCommand.
      */
     ShooterSubsystem subsystem;
+    HopperSubsystem hopperSubsystem;
+    LimelightSubsystem limelightSubsystem;
     double targetServoSpeed;
 
-    public ShooterCommand(ShooterSubsystem subsystem, double targetServoSpeed) {
+    public ShooterCommand(ShooterSubsystem subsystem, HopperSubsystem hopperSubsystem, LimelightSubsystem limelightSubsystem, double targetServoSpeed) {
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem);
+        addRequirements(subsystem, hopperSubsystem, limelightSubsystem);
         this.subsystem = subsystem;
+        this.hopperSubsystem = hopperSubsystem;
+        this.limelightSubsystem = limelightSubsystem;
         this.targetServoSpeed = targetServoSpeed;
     }
 
@@ -35,16 +41,19 @@ public class ShooterCommand extends CommandBase {
     @Override
     public void execute() {
         
-        subsystem.shoot(true);
-        SmartDashboard.putNumber("Shooter Target Velocity", LimelightSubsystem.findRPM());
+        double targetVelocity = limelightSubsystem.findRPM();
+        subsystem.shoot(targetVelocity);
+        hopperSubsystem.hopperPower(RobotContainer.robotConstants.getIntakeConstants().getHopperSpeedForward());
+        SmartDashboard.putNumber("Shooter Target Velocity", limelightSubsystem.findRPM());
         subsystem.setHoodAngle(30);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        subsystem.shoot(false);
+        subsystem.shoot(0);
         subsystem.setServoSpeed(0);
+        hopperSubsystem.hopperPower(0);
     }
 
     // Returns true when the command should end.

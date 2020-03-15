@@ -15,30 +15,40 @@ import java.util.List;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import java.io.IOException;
 import java.net.NetworkInterface;
 
 import frc.robot.auton.SimpleThreeBall;
+import frc.robot.auton.Turn90DegreesTest;
+import frc.robot.auton.TurretThreeBall;
 import frc.robot.commands.ClimbDownCommand;
 import frc.robot.commands.ClimbUpCommand;
 import frc.robot.commands.FoldCommand;
 import frc.robot.commands.FoldSetCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.LimelightData;
 import frc.robot.commands.PushDiagnostics;
+import frc.robot.commands.ShootWithTurret;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.VisionTrack;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DiagnosticSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utilities.Constants;
+import frc.robot.utilities.Gains;
+import frc.robot.utilities.Utils;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -51,9 +61,10 @@ public class RobotContainer {
   public final ShooterSubsystem m_ShooterSubsystem;
   public final ClimberSubsystem m_ClimberSubsystem;
   public final IntakeSubsystem m_IntakeSubsystem;
-  public final DriveSubsystem m_robotDrive;
+  public final DriveSubsystem m_RobotDrive;
   public final DiagnosticSubsystem m_DiagnosticsSubsystem;
   public final LimelightSubsystem m_LimelightSubsystem;
+  public final HopperSubsystem m_HopperSubsystem;
 
   // The driver's controller
   public static XBoxController driver;
@@ -125,24 +136,47 @@ public class RobotContainer {
     m_ShooterSubsystem = new ShooterSubsystem();
     m_IntakeSubsystem = new IntakeSubsystem();
     m_ClimberSubsystem = new ClimberSubsystem();
-    m_robotDrive = new DriveSubsystem();
+    m_RobotDrive = new DriveSubsystem();
     m_DiagnosticsSubsystem = new DiagnosticSubsystem();
     m_LimelightSubsystem = new LimelightSubsystem();
+    m_HopperSubsystem = new HopperSubsystem();
     // Configure the button bindings
     configureButtonBindings();
+    // Add auton to SmartDashboard
     putAuton();
 
+    double linearSpeed = Utils.deadband(driver.getRawAxis(1),
+        RobotContainer.robotConstants.getDriveConstants().getDriveTrainDeadband());
+    double curveSpeed = Utils.deadband(-driver.getRawAxis(4),
+        RobotContainer.robotConstants.getDriveConstants().getTurnDeadband());
 
-    //Push Diagnostics
+    // Configure default commands
+    // Set the default drive command to custom curvature drive
+    m_RobotDrive.setDefaultCommand(new RunCommand(() -> m_RobotDrive
+        // Forward speed
+        .curvatureDrive(linearSpeed,
+            // Turning speed
+            curveSpeed,
+            // Quick turn
+            driver.getRightBumper())));
+
+    // Push Diagnostics
     new PushDiagnostics(m_DiagnosticsSubsystem);
+    // Put Limelight Data on smartDashboard
+    new LimelightData(m_LimelightSubsystem);
 
-    //Climb Fold
+    // Climb Fold
     new FoldCommand(m_ClimberSubsystem, climber.getLeftStickY(), climber.getRightStickY());
   }
 
+  /**
+   * Adds Auton options
+   */
   public void putAuton() {
-    chooser.addOption("AIM AND SHOOT ONLY",
-        new SimpleThreeBall(m_robotDrive, m_ShooterSubsystem));
+    chooser.setDefaultOption("AIM AND SHOOT ONLY",
+        new SimpleThreeBall(m_RobotDrive, m_LimelightSubsystem, m_ShooterSubsystem));
+    chooser.addOption("Aim with turret", new TurretThreeBall(m_RobotDrive, m_LimelightSubsystem, m_ShooterSubsystem));
+    chooser.addOption("Turn 90 degrees test", new Turn90DegreesTest(m_RobotDrive));
     SmartDashboard.putData("Auto Chooser", chooser);
   }
 
@@ -157,15 +191,32 @@ public class RobotContainer {
     manip = new XBoxController(robotConstants.getOIConstants().getKOpControllerPort());
     climber = new XBoxController(robotConstants.getOIConstants().getKClimberControllerPort());
 
-    //Vision tracking (Limelight and Drivetrain)
-    driver.buttonA.whenHeld(new VisionTrack(m_LimelightSubsystem, m_robotDrive));
+    // Vision tracking (Limelight and Drivetrain)
+    driver.buttonA.whenHeld(new VisionTrack(m_LimelightSubsystem, m_RobotDrive));
+    // Stabilize robot to drive straight with gyro when left bumper is held
+    driver.buttonRightTrigger.whenHeld(new PIDCommand(
+        new PIDController(Gains.DriveStabilization.kStabilizationP, Gains.DriveStabilization.kStabilizationI,
+            Gains.DriveStabilization.kStabilizationD),
+        // Close the loop on the turn rate
+        m_RobotDrive::getTurnRate,
+        // Setpoint is 0
+        0,
+        // Pipe the output to the turning controls
+        output -> m_RobotDrive.arcadeDrive(driver.getRightTrigger(), output, false),
+        // Require the robot drive
+        m_RobotDrive));
 
-    //Shooter and intake
-    manip.buttonB.whenHeld(new ShooterCommand(m_ShooterSubsystem, 0.7)); // Shoot
-    manip.buttonY.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_ShooterSubsystem, false)); // Intake normal
-    manip.buttonSELECT.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_ShooterSubsystem, true)); // Intake Reverse
+    // Shooter and intake
+    manip.buttonA
+        // Shoot without the turret (Requires driver align)
+        .whenHeld(new ShooterCommand(m_ShooterSubsystem, m_HopperSubsystem, m_LimelightSubsystem, 0.7));
+    manip.buttonB
+        // Shoot with the turret
+        .whenHeld(new ShootWithTurret(m_RobotDrive, m_LimelightSubsystem, m_ShooterSubsystem, m_HopperSubsystem, 0.7));
+    manip.buttonY.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_HopperSubsystem, false)); // Intake normal
+    manip.buttonSELECT.whenHeld(new IntakeCommand(m_IntakeSubsystem, m_HopperSubsystem, true)); // Intake Reverse
 
-    //Climber buttons
+    // Climber buttons
     climber.buttonA.whenPressed(new FoldSetCommand(m_ClimberSubsystem));
     climber.buttonLeftBumper.whenPressed(new ClimbUpCommand(m_ClimberSubsystem, 0.85));
     climber.buttonRightBumper.whenPressed(new ClimbDownCommand(m_ClimberSubsystem, 0.85));
@@ -212,6 +263,7 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+  @SuppressWarnings("unused")
   public Command getAutonomousCommand() {
     Command autonMode = null;
     return (Command) chooser.getSelected();

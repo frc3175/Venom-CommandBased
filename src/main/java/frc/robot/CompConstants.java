@@ -140,6 +140,21 @@ public final class CompConstants extends Constants {
         public double getDriveStraightConstant() {
             return 1;
         }
+
+        @Override
+        public double getTurnToleranceDeg() {
+            return 5;
+        }
+
+        @Override
+        public double getTurnRateToleranceDegPerS() {
+            return 10;
+        }
+
+        @Override
+        public boolean getGyroReversed() {
+            return false;
+        }
     }
 
     public class OIConstants extends Constants.OIConstants {
@@ -237,45 +252,6 @@ public final class CompConstants extends Constants {
         }
     }
 
-    public class PIDConstants extends Constants.PIDConstants {
-    
-        @Override
-        public int getkSlotIDx() {
-            return 0;
-        }
-
-        @Override
-        public int getkPIDLoopIdx() {
-            return 0;
-        }
-
-        @Override
-        public int getkTimeoutMs() {
-            return 30;
-        }
-
-        @Override
-        public double getkP() {
-            return 0.03;
-        }
-
-        @Override
-        public double getkI() {
-            return 0;
-        }
-
-        @Override
-        public double getkD() {
-            return 0;
-        }
-    
-        @Override
-        public double getkF() {
-            return 0.14;
-        }
-
-    }
-
     private RobotIDConstants robotIDConstants = new RobotIDConstants();
 
     private DriveConstants robotDriveConstants = new DriveConstants();
@@ -291,8 +267,6 @@ public final class CompConstants extends Constants {
     private ShooterConstants robotShooterConstants = new ShooterConstants();
 
     private LimelightConstants limelightConstants = new LimelightConstants();
-
-    private PIDConstants pidConstants = new PIDConstants();
 
     @Override
     public frc.robot.utilities.Constants.RobotIDConstants getRobotIDConstants() {
@@ -332,11 +306,6 @@ public final class CompConstants extends Constants {
     @Override
     public LimelightConstants getLimelightConstants() {
         return limelightConstants;
-    }
-
-    @Override
-    public PIDConstants getPIDConstants() {
-        return pidConstants;
     }
 
 }

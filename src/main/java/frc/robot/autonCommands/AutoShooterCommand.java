@@ -8,7 +8,7 @@
 package frc.robot.autonCommands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class AutoShooterCommand extends CommandBase {
@@ -16,15 +16,20 @@ public class AutoShooterCommand extends CommandBase {
      * Creates a new ShooterCommand.
      */
     ShooterSubsystem subsystem;
+    LimelightSubsystem limelightSub;
     double targetRPM;
-    DriveSubsystem driveSub;
     double targetServoSpeed;
 
-    public AutoShooterCommand(ShooterSubsystem subsystem, DriveSubsystem driveSub) {
+    /**
+     * 
+     * @param subsystem Shooter Subsystem to use
+     * @param limelightSub Limelight subsystem to use
+     */
+    public AutoShooterCommand(ShooterSubsystem subsystem, LimelightSubsystem limelightSub) {
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem, driveSub);
+        addRequirements(subsystem, limelightSub);
         this.subsystem = subsystem;
-        this.driveSub = driveSub;
+        this.limelightSub = limelightSub;
     }
 
     // Called when the command is initially scheduled.
@@ -37,13 +42,14 @@ public class AutoShooterCommand extends CommandBase {
     @Override
     public void execute() {
 
-        subsystem.shoot(true);
+        double targetVelocity = limelightSub.findRPM();
+        subsystem.shoot(targetVelocity);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        subsystem.shoot(false);
+        subsystem.shoot(0);
         subsystem.setServoSpeed(0);
     }
 

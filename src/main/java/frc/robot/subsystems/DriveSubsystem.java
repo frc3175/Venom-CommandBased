@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import frc.robot.RobotContainer;
-import frc.robot.commands.DriveCommand;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -25,8 +24,6 @@ public class DriveSubsystem extends SubsystemBase {
     // Constructor that is run once
     public DriveSubsystem() {
 
-        setDefaultCommand(new DriveCommand(this));
-
         // Drive train motors
         rightMotorFront = new WPI_TalonFX(RobotContainer.robotConstants.getDriveConstants().getDT_TALON_LEFTFRONT());
         rightMotorBack = new WPI_TalonFX(RobotContainer.robotConstants.getDriveConstants().getDT_TALON_RIGHTBACK());
@@ -42,23 +39,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
-     * 
-     * @return gyro angle
-     */
-    public static double getAngle() {
-        return gyro.getAngle();
-    }
-
-    /**
      * @return Resets gyro Yaw and Angle
      */
     public static void resetGyro() {
         gyro.reset();
-    }
-
-    public double getVisionAngle() {
-        double value = LimelightSubsystem.getY();
-        return value;
     }
 
     // Tank Drive used for limelight lineup
@@ -124,25 +108,6 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public static boolean isConnected() {
         return gyro.isConnected();
-    }
-
-    // Drive straight method used for auton
-    public static void driveStraight(double power) {
-        if (power > 0) {
-            if (getAngle() > RobotContainer.robotConstants.getDriveConstants().getDriveStraightConstant())
-                drive(power * .80, -power * 1.15);
-            else if (getAngle() < -RobotContainer.robotConstants.getDriveConstants().getDriveStraightConstant())
-                drive(power * 1.15, -power * .85);
-            else
-                drive(power, -power);
-        } else {
-            if (getAngle() > RobotContainer.robotConstants.getDriveConstants().getDriveStraightConstant())
-                drive(power * 1.15, -power * .85);
-            else if (getAngle() < -RobotContainer.robotConstants.getDriveConstants().getDriveStraightConstant())
-                drive(power * .8, -power * 1.15);
-            else
-                drive(power, -power);
-        }
     }
 
     /**
@@ -218,10 +183,6 @@ public class DriveSubsystem extends SubsystemBase {
         rightMotorFront.set(ControlMode.PercentOutput, rightMotorOutput * 1 * -1);
     }
 
-    public static double getAHRS() {
-        return gyro.getAngle();
-    }
-
     public static double getEncoderDistanceRight() {
         return rightMotorFront.getSelectedSensorPosition();
     }
@@ -239,7 +200,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static double getAvgVelocity() {
-        // System.out.println("LEFT: " + encoderLeftFront.getVelocity());
         return (leftMotorFront.getSelectedSensorVelocity());
     }
 
@@ -247,17 +207,35 @@ public class DriveSubsystem extends SubsystemBase {
         return (Math.abs(getEncoderDistanceLeft() + getEncoderDistanceRight()) / 2);
     }
 
-    public static void stop() {
-        rightMotorFront.set(ControlMode.PercentOutput, 0);
-        rightMotorBack.set(ControlMode.PercentOutput, 0);
-        leftMotorBack.set(ControlMode.PercentOutput, 0);
-        leftMotorFront.set(ControlMode.PercentOutput, 0);
-    }
-
     public static void resetEncoder() {
         leftMotorFront.setSelectedSensorPosition(0, 0, 10);
         rightMotorFront.setSelectedSensorPosition(0, 0, 10);
+    }
 
+    /**
+     * 
+     * @return gyro angle
+     */
+    public static double getAngle() {
+        return gyro.getAngle();
+    }
+
+    /**
+     * Returns the heading of the robot.
+     *
+     * @return the robot's heading in degrees, from 180 to 180
+     */
+    public double getHeading() {
+        return Math.IEEEremainder(gyro.getAngle(), 360) * (RobotContainer.robotConstants.getDriveConstants().getGyroReversed() ? -1.0 : 1.0);
+    }
+
+    /**
+     * Returns the turn rate of the robot.
+     *
+     * @return The turn rate of the robot, in degrees per second
+     */
+    public double getTurnRate() {
+        return gyro.getRate() * (RobotContainer.robotConstants.getDriveConstants().getGyroReversed() ? -1.0 : 1.0);
     }
 
     // Diagnostics Used in the diagnostic subsystem

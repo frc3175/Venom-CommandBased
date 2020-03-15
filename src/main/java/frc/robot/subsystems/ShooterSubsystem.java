@@ -10,12 +10,14 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+import frc.robot.utilities.Gains;
+
 /**
  * <summary> Code meant for the Shooter and launcher balls with the hopper
  * </summary>
  */
 public class ShooterSubsystem extends SubsystemBase {
-    private static TalonSRX masterShooterTalon, followerTalon, hopperTalon, rotationTalon;
+    private static TalonSRX masterShooterTalon, followerTalon, rotationTalon;
     private static Servo hoodServo;
 
     double hoodAngle = 0;
@@ -26,59 +28,38 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem() {
         masterShooterTalon = new TalonSRX(RobotContainer.robotConstants.getRobotIDConstants().getTopShooterMotorID());
         followerTalon = new TalonSRX(RobotContainer.robotConstants.getRobotIDConstants().getBottomShooterMotorID());
-        hopperTalon = new TalonSRX(RobotContainer.robotConstants.getRobotIDConstants().getHopperMotorID());
         rotationTalon = new TalonSRX(RobotContainer.robotConstants.getRobotIDConstants().getRotationMotorID());
-        hoodServo = new Servo(RobotContainer.robotConstants.getRobotIDConstants().getHoodedAngleMotorID());
+        hoodServo = new Servo(RobotContainer.robotConstants.getRobotIDConstants().getHoodedAngleMotorID()); //TODO: plug in servo to PWM port 0
 
         masterShooterTalon.configFactoryDefault();
         masterShooterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
-                RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
+                Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kTimeoutMs);
         masterShooterTalon.setSensorPhase(true);
-        masterShooterTalon.configNominalOutputForward(0,
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        masterShooterTalon.configNominalOutputReverse(0,
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        masterShooterTalon.configPeakOutputForward(1, RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        masterShooterTalon.configPeakOutputReverse(1, RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
+        masterShooterTalon.configNominalOutputForward(0, Gains.shooterPID.kTimeoutMs);
+        masterShooterTalon.configNominalOutputReverse(0, Gains.shooterPID.kTimeoutMs);
+        masterShooterTalon.configPeakOutputForward(1, Gains.shooterPID.kTimeoutMs);
+        masterShooterTalon.configPeakOutputReverse(1, Gains.shooterPID.kTimeoutMs);
 
         // Gains
-        masterShooterTalon.config_kF(RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkF(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        masterShooterTalon.config_kP(RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkP(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        masterShooterTalon.config_kI(RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkI(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        masterShooterTalon.config_kD(RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkD(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
+        masterShooterTalon.config_kF(Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kF, Gains.shooterPID.kTimeoutMs);
+        masterShooterTalon.config_kP(Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kP, Gains.shooterPID.kTimeoutMs);
+        masterShooterTalon.config_kI(Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kI, Gains.shooterPID.kTimeoutMs);
+        masterShooterTalon.config_kD(Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kD, Gains.shooterPID.kTimeoutMs);
 
         followerTalon.configFactoryDefault();
         followerTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
-                RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
+                Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kTimeoutMs);
         followerTalon.setSensorPhase(true);
-        followerTalon.configNominalOutputForward(0, RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        followerTalon.configNominalOutputReverse(0, RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        followerTalon.configPeakOutputForward(1, RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        followerTalon.configPeakOutputReverse(1, RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
+        followerTalon.configNominalOutputForward(0, Gains.shooterPID.kTimeoutMs);
+        followerTalon.configNominalOutputReverse(0, Gains.shooterPID.kTimeoutMs);
+        followerTalon.configPeakOutputForward(1, Gains.shooterPID.kTimeoutMs);
+        followerTalon.configPeakOutputReverse(1, Gains.shooterPID.kTimeoutMs);
 
         // Gains
-        followerTalon.config_kF(RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkF(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        followerTalon.config_kP(RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkP(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        followerTalon.config_kI(RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkI(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
-        followerTalon.config_kD(RobotContainer.robotConstants.getPIDConstants().getkPIDLoopIdx(),
-                RobotContainer.robotConstants.getPIDConstants().getkD(),
-                RobotContainer.robotConstants.getPIDConstants().getkTimeoutMs());
+        followerTalon.config_kF(Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kF, Gains.shooterPID.kTimeoutMs);
+        followerTalon.config_kP(Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kP, Gains.shooterPID.kTimeoutMs);
+        followerTalon.config_kI(Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kI, Gains.shooterPID.kTimeoutMs);
+        followerTalon.config_kD(Gains.shooterPID.kPIDLoopIdx, Gains.shooterPID.kD, Gains.shooterPID.kTimeoutMs);
 
         SupplyCurrentLimitConfiguration currentConfig = new SupplyCurrentLimitConfiguration(true, 40, 45, 1.0);
         masterShooterTalon.configSupplyCurrentLimit(currentConfig);
@@ -86,18 +67,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
     }
 
-    public void shoot(boolean pressed) {
-        if (pressed) {
-            double targetVelocity_UnitsPer100ms = LimelightSubsystem.findRPM();
-            masterShooterTalon.set(ControlMode.Velocity, targetVelocity_UnitsPer100ms);
-            followerTalon.set(ControlMode.Velocity, targetVelocity_UnitsPer100ms);
-        } else {
-            masterShooterTalon.set(ControlMode.Velocity, 0);
-            followerTalon.set(ControlMode.Velocity, 0);
-        }
+    public void shoot(double targetVelocity) {
+        masterShooterTalon.set(ControlMode.Velocity, targetVelocity);
+        followerTalon.set(ControlMode.Velocity, targetVelocity);
+        SmartDashboard.putNumber("Shooter/TopMotor RPM", masterShooterTalon.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Shooter/BottomMotor RPM", followerTalon.getSelectedSensorVelocity());
     }
 
-    public static void shooterRotation(double speed) {
+    public void shooterRotation(double speed) {
         rotationTalon.set(ControlMode.PercentOutput, speed);
     }
 
@@ -117,11 +94,6 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodServo.set(speed);
     }
 
-    //TODO: Calculate a full rotation and change it to degrees
-    public void setTurretAngle(double setpoint) {
-        LimelightSubsystem.limelightPID.setSetpoint(setpoint);
-    }
-
     public double getTurretEncoder() {
         return rotationTalon.getSelectedSensorPosition();
     }
@@ -134,16 +106,6 @@ public class ShooterSubsystem extends SubsystemBase {
             }
         }
         return false;
-    }
-
-    public void hopperPower(double power) {
-        hopperTalon.set(ControlMode.PercentOutput, power);
-    }
-
-    public static double publishRPM() {
-        SmartDashboard.putNumber("Shooter/TopMotor RPM", masterShooterTalon.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("Shooter/BottomMotor RPM", followerTalon.getSelectedSensorVelocity());
-        return masterShooterTalon.getSelectedSensorVelocity();
     }
 
     /**
@@ -163,10 +125,6 @@ public class ShooterSubsystem extends SubsystemBase {
         return (followerTalon.getBusVoltage() != 0.0);
     }
 
-    public static boolean isHopperAlive() {
-        return (hopperTalon.getBusVoltage() != 0.0);
-    }
-
     public static double getTempTopTalon() {
         return masterShooterTalon.getTemperature();
     }
@@ -175,15 +133,10 @@ public class ShooterSubsystem extends SubsystemBase {
         return followerTalon.getTemperature();
     }
 
-    public static double getTempHopperTalon() {
-        return hopperTalon.getTemperature();
-    }
-
     @Override
     public void periodic() {
 
         setServoSpeed(pidController.calculate(getHoodAngle()));
         SmartDashboard.putNumber("Curr Angle", getHoodAngle());
-        setTurretAngle(LimelightSubsystem.limelightPID.calculate(getTurretEncoder()));
     }
 }

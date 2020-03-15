@@ -50,11 +50,11 @@ public class DiagnosticSubsystem extends SubsystemBase{
     public void pushShooterDiagnostics() {
         diagnosticTable.getEntry("TopMotorAlive").setBoolean(ShooterSubsystem.isTopShooterAlive());
         diagnosticTable.getEntry("BottomMotorAlive").setBoolean(ShooterSubsystem.isBottomShooterAlive());
-        diagnosticTable.getEntry("HopperAlive").setBoolean(ShooterSubsystem.isHopperAlive());
+        diagnosticTable.getEntry("HopperAlive").setBoolean(HopperSubsystem.isHopperAlive());
 
         pushDouble("topMotorTemp", ShooterSubsystem.getTempTopTalon());
         pushDouble("bottomMotorTemp", ShooterSubsystem.getTempBottomTalon());
-        pushDouble("HopperTemp", ShooterSubsystem.getTempHopperTalon());
+        pushDouble("HopperTemp", HopperSubsystem.getTempHopperTalon());
     }
 
     public void pushClimberDiagnostics() {

@@ -29,8 +29,6 @@ public abstract class Constants
 
     public abstract LimelightConstants getLimelightConstants();
 
-    public abstract PIDConstants getPIDConstants();
-
     public abstract class RobotIDConstants
     {
         public abstract int getIntakeMotorID();
@@ -81,6 +79,12 @@ public abstract class Constants
         public abstract double getTurnDeadband();
 
         public abstract double getDriveStraightConstant();
+
+        public abstract double getTurnToleranceDeg();
+
+        public abstract double getTurnRateToleranceDegPerS();
+
+        public abstract boolean getGyroReversed();
 
     }
 
@@ -135,23 +139,5 @@ public abstract class Constants
         public abstract double getPowerPortHeight();
 
         public abstract double getLimelightOffset();
-    }
-
-    public abstract class PIDConstants {
-
-        public abstract int getkSlotIDx();
-
-        public abstract int getkPIDLoopIdx();
-
-        public abstract int getkTimeoutMs();
-
-        public abstract double getkP();
-
-        public abstract double getkI();
-
-        public abstract double getkD();
-
-        public abstract double getkF();
-    
     }
 }

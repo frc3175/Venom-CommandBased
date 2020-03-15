@@ -8,18 +8,15 @@
 package frc.robot.auton;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.autonCommands.AutoAlignCommand;
-import frc.robot.autonCommands.AutoShooterCommand;
+import frc.robot.autonCommands.TurnToAngle;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 
-public class SimpleThreeBall extends SequentialCommandGroup {
+public class Turn90DegreesTest extends SequentialCommandGroup {
     /**
-     * Creates a new Shoot auton with the drivetrain
+     * Creates a new shoot auton with just the turret
      */
-    public SimpleThreeBall(DriveSubsystem driveSub, LimelightSubsystem limelightSub, ShooterSubsystem shooterSub) {
-        super(new AutoAlignCommand(driveSub, limelightSub).withTimeout(2).andThen(() -> driveSub.arcadeDrive(0, 0, false)),
-                new AutoShooterCommand(shooterSub, limelightSub).withTimeout(3));
+    public Turn90DegreesTest(DriveSubsystem driveSub) {
+        // super(new FooCommand(), new BarCommand());
+        super(new TurnToAngle(90, driveSub).withTimeout(4));
     }
 }

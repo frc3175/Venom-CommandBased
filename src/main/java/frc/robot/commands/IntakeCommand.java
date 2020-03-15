@@ -10,15 +10,15 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 
 public class IntakeCommand extends CommandBase {
     /**
      * Creates a new IntakeCommand.
      */
     IntakeSubsystem subsystem;
-    ShooterSubsystem shooterSub;
+    HopperSubsystem hopperSub;
     /**
      * Boolean values
      */
@@ -26,11 +26,11 @@ public class IntakeCommand extends CommandBase {
     
     Timer agitatorTimer = new Timer(); //Agitation Timer
 
-    public IntakeCommand(IntakeSubsystem subsystem, ShooterSubsystem shooterSub, boolean shouldRunBack) {
+    public IntakeCommand(IntakeSubsystem subsystem, HopperSubsystem hopperSub, boolean shouldRunBack) {
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem, shooterSub);
+        addRequirements(subsystem, hopperSub);
         this.subsystem = subsystem;
-        this.shooterSub = shooterSub;
+        this.hopperSub = hopperSub;
         this.shouldRunBack = shouldRunBack;
     }
 
@@ -52,9 +52,9 @@ public class IntakeCommand extends CommandBase {
             }
         } else {
             if (agitatorTimer.get() < 1) { // For 1 second...
-                shooterSub.hopperPower(RobotContainer.robotConstants.getIntakeConstants().getHopperSpeedReverse());
+                hopperSub.hopperPower(RobotContainer.robotConstants.getIntakeConstants().getHopperSpeedReverse());
             } else if (agitatorTimer.get() < 3) { // For 3 seconds...
-                shooterSub.hopperPower(RobotContainer.robotConstants.getIntakeConstants().getHopperSpeedForward());
+                hopperSub.hopperPower(RobotContainer.robotConstants.getIntakeConstants().getHopperSpeedForward());
             } else {
                 agitatorTimer.reset(); // Reset timer to 0 seconds
             }
@@ -66,6 +66,7 @@ public class IntakeCommand extends CommandBase {
     public void end(boolean interrupted) {
         subsystem.IntakeUp();
         subsystem.intakePowerCell(0);
+        hopperSub.hopperPower(0);
     }
 
     // Returns true when the command should end.

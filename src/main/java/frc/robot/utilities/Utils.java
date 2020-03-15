@@ -1,6 +1,5 @@
 package frc.robot.utilities;
 
-import frc.robot.RobotContainer;
 import frc.robot.utilities.Utils;
 
 public class Utils {

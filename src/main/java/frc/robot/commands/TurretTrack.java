@@ -10,24 +10,26 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.utilities.Gains;
 
-public class VisionTrack extends CommandBase {
+public class TurretTrack extends CommandBase {
     private LimelightSubsystem vision;
-    private DriveSubsystem drive;
+    private ShooterSubsystem shooter;
 
-    private PIDController angleCorrector = new PIDController(0.05, 0, 5);
+    private PIDController angleCorrector = new PIDController(Gains.TurretPID.kP, Gains.TurretPID.kI,
+            Gains.TurretPID.kD);
 
     /**
-     * Creates a new FollowTarget.
+     * Creates a new Follow Target.
      */
-    public VisionTrack(LimelightSubsystem limelight, DriveSubsystem rDrive) {
-        vision = limelight;
-        drive = rDrive;
+    public TurretTrack(LimelightSubsystem limelight, ShooterSubsystem shooter) {
+        this.vision = limelight;
+        this.shooter = shooter;
 
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(vision, drive);
+        addRequirements(vision, shooter);
 
         angleCorrector.setTolerance(0.2);
     }
@@ -44,15 +46,13 @@ public class VisionTrack extends CommandBase {
     @Override
     public void execute() {
         // Passing aim PID output to the drive
-        drive.arcadeDrive(0, // Stationary while rotating
-                             // Angle Correction
+        shooter.shooterRotation(
+                // Angle Correction
                 MathUtil.clamp(
                         // Calculate what to do based off measurement
-                        angleCorrector.calculate(-vision.getXError()),
-                        // Min, Max output
-                        -0.5, 0.5),
-                // No squared inputs
-                false);
+                        angleCorrector.calculate(vision.getXError()),
+                        // Min, Max output TODO: make this faster?
+                        -0.5, 0.5));
     }
 
     // Called once the command ends or is interrupted.

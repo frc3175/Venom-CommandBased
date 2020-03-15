@@ -4,12 +4,12 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.utilities.PIDController;
 import frc.robot.utilities.Utils;
 
 @SuppressWarnings("unused")
@@ -69,7 +69,7 @@ public class LimelightSubsystem extends SubsystemBase {
         return tx.getDouble(0.0);
     }
 
-    public static double getY() {
+    public double getY() {
         return table.getEntry("ty").getDouble(0.0);
     }
 
@@ -109,7 +109,7 @@ public class LimelightSubsystem extends SubsystemBase {
         }
     }
 
-    public static double findClosestDistance() {
+    public double findClosestDistance() {
         double myNumber = distanceCalulator(getY());
         double distance = Math.abs(distances[0] - myNumber);
         int idx = 0;
@@ -123,7 +123,7 @@ public class LimelightSubsystem extends SubsystemBase {
         return distances[idx];
     }
 
-    public static void goToDistance(boolean value) {
+    public void goToDistance(boolean value) {
         testFeed();
         double distance = distanceCalulator(getY());
         double power = distance * 0.002;
@@ -144,18 +144,6 @@ public class LimelightSubsystem extends SubsystemBase {
         return pipeline.getDouble(-1);
     }
 
-    public static void rotateTurret() {
-        testFeed();
-        double x = Math.abs(getX());
-        double power = x * 0.08;
-        if (getX() > 0d) {
-            ShooterSubsystem.shooterRotation(power);
-        }
-        if (getX() < -0d) {
-            ShooterSubsystem.shooterRotation(-power);
-        }
-    }
-
     /**
      * 
      * @param ty Ty value of the limelight
@@ -174,13 +162,12 @@ public class LimelightSubsystem extends SubsystemBase {
                 - RobotContainer.robotConstants.getLimelightConstants().getLimelightOffset());
     }
 
-    public static void pushPeriodic() {
+    public void pushPeriodic() {
         SmartDashboard.putNumber("Limelight Distance", distanceCalulator(getY()));
         SmartDashboard.putNumber("RPM Setpoint", findRPM());
-        ShooterSubsystem.publishRPM();
     }
 
-    public static double findRPM() {
+    public double findRPM() {
         double myNumber = distanceCalulator(getY());
         double distance = Math.abs(distances[0] - myNumber);
         int idx = 0;

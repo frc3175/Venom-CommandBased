@@ -7,11 +7,10 @@
 
 package frc.robot.autonCommands;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import frc.robot.utilities.PIDController;
-import frc.robot.utilities.PIDCommand;
-import frc.robot.RobotContainer;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -22,14 +21,19 @@ public class AutoAlignCommand extends PIDCommand {
      */
 
     DriveSubsystem subsystem;
+    LimelightSubsystem limelightSub;
 
-    public AutoAlignCommand(DriveSubsystem subsystem)
+    /**
+     * @param subsystem Drive subsystem to use
+     * @param limelightSub Limelight subsystem to use
+     */
+    public AutoAlignCommand(DriveSubsystem subsystem, LimelightSubsystem limelightSub)
   {
     super(
         // The controller that the command will use
         new PIDController(1.0, 0.0, .05),
         // This should return the measurement
-        () -> subsystem.getVisionAngle(),
+        () -> limelightSub.getY(),
         // This should return the setpoint (can also be a constant)
         () -> 0,
         // This uses the output
@@ -44,7 +48,6 @@ public class AutoAlignCommand extends PIDCommand {
     addRequirements(subsystem);
     this.subsystem = subsystem;
     getController().setIntegratorRange(-1, 1);
-    getController().setIntegratorZone(2);
     getController().setTolerance(.02);
   }
   @Override
@@ -56,5 +59,7 @@ public class AutoAlignCommand extends PIDCommand {
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() { return getController().atSetpoint(); }
+  public boolean isFinished() { 
+    return getController().atSetpoint(); 
+  }
 }
