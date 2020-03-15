@@ -68,10 +68,4 @@ public class IntakeCommand extends CommandBase {
         subsystem.intakePowerCell(0);
         hopperSub.hopperPower(0);
     }
-
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
 }

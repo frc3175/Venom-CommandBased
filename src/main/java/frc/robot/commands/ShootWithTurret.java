@@ -22,10 +22,4 @@ public class ShootWithTurret extends SequentialCommandGroup {
         super(new TurretTrack(limelightSub, shooterSub).withTimeout(2),
                 new ShooterCommand(shooterSub, hopperSub, limelightSub, targetServoSpeed).withTimeout(4));
     }
-
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
 }

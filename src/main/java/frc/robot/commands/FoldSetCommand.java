@@ -39,10 +39,4 @@ public class FoldSetCommand extends CommandBase {
     public void end(boolean interrupted) {
         subsystem.foldSet(0);
     }
-
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
 }

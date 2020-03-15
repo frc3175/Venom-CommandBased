@@ -36,6 +36,30 @@ public class ClimberSubsystem extends SubsystemBase {
 
     /**
      * 
+     * @return Returns true if the climber is in the up position
+     */
+    public boolean isClimberUp() {
+        if(leftClimbTalon.getSelectedSensorPosition() > RobotContainer.robotConstants.getClimbConstants().getUpPosition()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 
+     * @return Returns true if the climber is in the down position
+     */
+    public boolean isClimberDown() {
+        if(leftClimbTalon.getSelectedSensorPosition() > RobotContainer.robotConstants.getClimbConstants().getDownPosition()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 
      * @param speed Folding speed
      */
     public void foldSet(double speed) {
