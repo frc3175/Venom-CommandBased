@@ -36,6 +36,7 @@ import frc.robot.commands.FoldSetCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.LimelightData;
 import frc.robot.commands.PushDiagnostics;
+import frc.robot.commands.RotateTurretManual;
 import frc.robot.commands.ShootWithTurret;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.VisionTrack;
@@ -167,6 +168,9 @@ public class RobotContainer {
 
     // Climb Fold
     new FoldCommand(m_ClimberSubsystem, climber.getLeftStickY(), climber.getRightStickY());
+
+    // Manual Turret
+    new RotateTurretManual(m_ShooterSubsystem, manip.getLeftStickX());
   }
 
   /**

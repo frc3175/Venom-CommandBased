@@ -22,7 +22,7 @@ public class TurretTrack extends CommandBase {
             Gains.TurretPID.kD);
 
     /**
-     * Creates a new Follow Target.
+     * Turret attempts to track a target
      */
     public TurretTrack(LimelightSubsystem limelight, ShooterSubsystem shooter) {
         this.vision = limelight;
