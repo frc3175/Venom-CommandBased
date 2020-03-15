@@ -17,8 +17,15 @@ public class ShootWithTurret extends SequentialCommandGroup {
     /**
      * Creates a new Shoot auton with the drivetrain
      */
-    public ShootWithTurret(DriveSubsystem driveSub, LimelightSubsystem limelightSub, ShooterSubsystem shooterSub, HopperSubsystem hopperSub, double targetServoSpeed) {
+    public ShootWithTurret(DriveSubsystem driveSub, LimelightSubsystem limelightSub, ShooterSubsystem shooterSub,
+            HopperSubsystem hopperSub, double targetServoSpeed) {
         super(new TurretTrack(limelightSub, shooterSub).withTimeout(2),
                 new ShooterCommand(shooterSub, hopperSub, limelightSub, targetServoSpeed).withTimeout(4));
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return true;
     }
 }

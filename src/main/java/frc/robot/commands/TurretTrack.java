@@ -60,5 +60,10 @@ public class TurretTrack extends CommandBase {
     public void end(boolean interrupted) {
         angleCorrector.reset();
     }
-
+    
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }
